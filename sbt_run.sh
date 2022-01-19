@@ -9,21 +9,21 @@ do
 		v) verilog=${OPTARG};;
 	esac
 done
-echo " Jessica: Tbench -- $tbench";
-echo " Jessica: Generate_Verilog: $verilog";
-echo " Jessica: ============================================ ";
+echo " Jessica:   Tbench: $tbench";
+echo " Jessica:   Generate_Verilog: $verilog";
+echo " Jessica:   ============================================ ";
 
 if [[ $tbench != $null ]]; then
-	echo " Jessica: Running testbench: sbt \"testOnly $tbench\"... "
+	echo " Jessica:   Running testbench: sbt \"testOnly $tbench\"... "
 	sbt "testOnly $tbench"
 else
-	echo " Jessica: No testbench is executed"
+	echo " Jessica:   No testbench is executed"
 fi
 
 if [[ $verilog != $null ]]; then
-	echo " Jessica: Generating verilog for $verilog... "
+	echo " Jessica:   Generating verilog for $verilog... "
 	sbt " runMain $verilog --target-dir generated/$verilog"
-	echo " Jessica: verilog is generated in ./generated/$verilog"
+	echo " Jessica:   verilog is generated in ./generated/$verilog"
 else
-	echo " Jessica: No verilog is generated"
+	echo " Jessica:   No verilog is generated"
 fi
