@@ -12,7 +12,7 @@ class BasicTest extends AnyFlatSpec with ChiselScalatestTester {
   // test class body here
   it should "Test programcounter.Counter" in {
   // test case body here
-    test(new Counter(32)) { dut =>
+    test(new Counter(32)).withAnnotations(Seq(WriteVcdAnnotation)) { dut =>
     // test body here
     dut.io.trigger.poke(true.B)
 

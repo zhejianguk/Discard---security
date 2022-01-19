@@ -8,7 +8,7 @@ import chisel3.stage.ChiselStage
 
 // *Driver is used for verilog generation
 object CounterDriver extends App {
-  (new ChiselStage).emitVerilog(new Counter(32),  Array(""))
+  (new ChiselStage).emitVerilog(new Counter(32),  args)
 }
 
 
