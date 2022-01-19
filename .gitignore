@@ -341,3 +341,6 @@ hs_err_pid*
 
 # example project
 hello/*
+project/.bsp/*
+project/project/*
+generated/*
