@@ -20,7 +20,7 @@ class GHT (Widith_CorePC: Int, Width_GHTPCCount: Int) extends Module {
   })
 
   val core_pc_current_reg = RegInit (0.U(Widith_CorePC.W))
-  val ght_pc_counter_reg = RegInit (0.U(Width_GHTPCCount.W))
+  val ght_pc_counter_reg = RegInit (io.core_reset_vector_in)
 
   def val_incr1 (currnt: UInt): UInt = {
       var nxt = currnt + 1.U;
