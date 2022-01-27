@@ -25,8 +25,16 @@ class GHT (params: GHTParams) extends Module {
     val ght_pc_count_out = Output(UInt(params.width_GHTPCCount.W))
   })
 
+  val sys_inialised_reg = RegInit (false.B) // Register used to identify if the system is inialised
   val core_pc_current_reg = RegInit (io.core_reset_vector_in)
   val ght_pc_counter_reg = RegInit (0.U(params.width_GHTPCCount.W))
+
+  when (io.core_pc_in === io.core_reset_vector_in)
+  {
+    sys_inialised_reg := true.B
+  } .otherwise {
+    sys_inialised_reg := sys_inialised_reg
+  }
 
   def val_incr1 (currnt: UInt): UInt = {
       var nxt = currnt + 1.U;
@@ -34,14 +42,17 @@ class GHT (params: GHTParams) extends Module {
   }
 
   // Core: PC shaddow register
-  when (core_pc_current_reg =/= io.core_pc_in) {
+  when ((sys_inialised_reg === true.B) && (core_pc_current_reg =/= io.core_pc_in)) {
     core_pc_current_reg := io.core_pc_in
-  } .otherwise {
+  } .elsewhen ((sys_inialised_reg === false.B) && (core_pc_current_reg =/= io.core_reset_vector_in)) {
+    core_pc_current_reg := io.core_reset_vector_in
+  }
+  .otherwise {
     core_pc_current_reg := core_pc_current_reg
   }
 
   // GHT: PC counter
-  when (core_pc_current_reg =/= io.core_pc_in) {
+  when ((sys_inialised_reg === true.B) && (core_pc_current_reg =/= io.core_pc_in)) {
     ght_pc_counter_reg := this.val_incr1(ght_pc_counter_reg)
   } .otherwise {
     ght_pc_counter_reg := ght_pc_counter_reg

@@ -16,21 +16,38 @@ class TB_GHT extends AnyFlatSpec with ChiselScalatestTester {
     dut.io.core_reset_vector_in.poke(0x10040.U)
     dut.io.ght_pc_count_out.expect(0.U)
 
-    //============ Commit 1 instruction ============
+    //============ Commit 1 instruction before system initialisation ============
     dut.clock.step(10) // clk+10
     dut.io.core_pc_in.poke(0x10044.U) // PC+1
 
     dut.clock.step(1) // clk+1
-    dut.io.ght_pc_count_out.expect(1.U)
+    dut.io.ght_pc_count_out.expect(0.U)
 
-    //============ Commit 2 instruction ============
+    //============ Commit 2 instruction before system initialisation ============
     dut.clock.step(2) // clk+10
     dut.io.core_pc_in.poke(0x10048.U) // PC+1
 
     dut.clock.step(1) // clk+10
     dut.io.core_pc_in.poke(0x10800.U) // PC JUmp
     dut.clock.step(1) // clk+1
-    dut.io.ght_pc_count_out.expect(3.U)
+    dut.io.ght_pc_count_out.expect(0.U)
+
+
+    //============ Commit 1 instruction after system initialisation ============
+    dut.clock.step(10) // clk+10
+    dut.io.core_pc_in.poke(0x10040.U)
+
+    dut.clock.step(1) // clk+1
+    dut.io.ght_pc_count_out.expect(0.U)
+
+    //============ Commit 2 instruction after system initialisation ============
+    dut.clock.step(2) // clk+10
+    dut.io.core_pc_in.poke(0x10048.U) // PC+2
+
+    dut.clock.step(1) // clk+10
+    dut.io.core_pc_in.poke(0x10800.U) // PC JUmp
+    dut.clock.step(1) // clk+1
+    dut.io.ght_pc_count_out.expect(2.U)
     }
   }
   it should "All tested!"
