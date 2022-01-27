@@ -10,7 +10,8 @@ class TB_GHT extends AnyFlatSpec with ChiselScalatestTester {
   // test class body here
   it should "Test guardiancouncil.GHT" in {
   // test case body here
-    test(new GHT(40, 64)).withAnnotations(Seq(WriteVcdAnnotation)) { dut =>
+    val p = new GHTParams (40, 64)
+    test(new GHT(p)).withAnnotations(Seq(WriteVcdAnnotation)) { dut =>
     // test body here
     dut.io.core_reset_vector_in.poke(0x10040.U)
     dut.io.ght_pc_count_out.expect(0.U)

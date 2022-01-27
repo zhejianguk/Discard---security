@@ -6,21 +6,27 @@ import chisel3.util._
 import chisel3.stage.ChiselStage
 
 
+case class GHTParams(
+  width_corePC: Int,
+  width_GHTPCCount: Int
+)
+
 // *Driver is used for verilog generation
 object GHT_Driver extends App {
-  (new ChiselStage).emitVerilog(new GHT(40, 64),  args)
+  val p = new GHTParams (40, 64)
+  (new ChiselStage).emitVerilog(new GHT(p), args)
 }
 
 
-class GHT (Widith_CorePC: Int, Width_GHTPCCount: Int) extends Module {
+class GHT (params: GHTParams) extends Module {
     val io = IO(new Bundle {
-    val core_reset_vector_in = Input(UInt(Widith_CorePC.W))
-    val core_pc_in = Input(UInt(Widith_CorePC.W))
-    val ght_pc_count_out = Output(UInt(Width_GHTPCCount.W))
+    val core_reset_vector_in = Input(UInt(params.width_corePC.W))
+    val core_pc_in = Input(UInt(params.width_corePC.W))
+    val ght_pc_count_out = Output(UInt(params.width_GHTPCCount.W))
   })
 
-  val core_pc_current_reg = RegInit (0.U(Widith_CorePC.W))
-  val ght_pc_counter_reg = RegInit (io.core_reset_vector_in)
+  val core_pc_current_reg = RegInit (io.core_reset_vector_in)
+  val ght_pc_counter_reg = RegInit (0.U(params.width_GHTPCCount.W))
 
   def val_incr1 (currnt: UInt): UInt = {
       var nxt = currnt + 1.U;
