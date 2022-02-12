@@ -2,13 +2,15 @@ package guardiancouncil
 
 
 import chisel3._
-import chisel3.util._
+import chisel3.experimental.{BaseModule}
 import chisel3.stage.ChiselStage
 
-
+//==========================================================
+// Parameters
+//==========================================================
 case class GHTParams(
-  width_corePC: Int,
-  width_GHTPCCount: Int
+  width_core_pc: Int,
+  width_te_pc: Int
 )
 
 // *Driver is used for verilog generation
@@ -17,46 +19,21 @@ object GHT_Driver extends App {
   (new ChiselStage).emitVerilog(new GHT(p), args)
 }
 
+//==========================================================
+// I/Os
+//==========================================================
+trait HasGHT_IO extends BaseModule {
+  val params: GHTParams
+  val params_te_pc = new TE_PC_Params (params.width_core_pc, params.width_te_pc)
 
-class GHT (params: GHTParams) extends Module {
-    val io = IO(new Bundle {
-    val core_reset_vector_in = Input(UInt(params.width_corePC.W))
-    val core_pc_in = Input(UInt(params.width_corePC.W))
-    val ght_pc_count_out = Output(UInt(params.width_GHTPCCount.W))
-  })
+  val io_te_pc = IO(new TE_PC_IO(params_te_pc))
+}
 
-  val sys_inialised_reg = RegInit (false.B) // Register used to identify if the system is inialised
-  val core_pc_current_reg = RegInit (io.core_reset_vector_in)
-  val ght_pc_counter_reg = RegInit (0.U(params.width_GHTPCCount.W))
 
-  when (io.core_pc_in === io.core_reset_vector_in)
-  {
-    sys_inialised_reg := true.B
-  } .otherwise {
-    sys_inialised_reg := sys_inialised_reg
-  }
+class GHT (val params: GHTParams) extends Module with HasGHT_IO
+{
+  val u_te_pc = Module (new TE_PC(TE_PC_Params (params.width_core_pc, params.width_te_pc)))
 
-  def val_incr1 (currnt: UInt): UInt = {
-      var nxt = currnt + 1.U;
-      nxt
-  }
+  u_te_pc.io <> io_te_pc
 
-  // Core: PC shaddow register
-  when ((sys_inialised_reg === true.B) && (core_pc_current_reg =/= io.core_pc_in)) {
-    core_pc_current_reg := io.core_pc_in
-  } .elsewhen ((sys_inialised_reg === false.B) && (core_pc_current_reg =/= io.core_reset_vector_in)) {
-    core_pc_current_reg := io.core_reset_vector_in
-  }
-  .otherwise {
-    core_pc_current_reg := core_pc_current_reg
-  }
-
-  // GHT: PC counter
-  when ((sys_inialised_reg === true.B) && (core_pc_current_reg =/= io.core_pc_in)) {
-    ght_pc_counter_reg := this.val_incr1(ght_pc_counter_reg)
-  } .otherwise {
-    ght_pc_counter_reg := ght_pc_counter_reg
-  }
-
-  io.ght_pc_count_out := ght_pc_counter_reg
 }
