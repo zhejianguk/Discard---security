@@ -6,8 +6,8 @@ import org.scalatest.flatspec.AnyFlatSpec
 
 
 class TB_ght_cc extends AnyFlatSpec with ChiselScalatestTester {
-  behavior of "TE_PC"
-  it should "Test guardiancouncil.TE_PC" in {
+  behavior of "TB_ght_cc"
+  it should "Test guardiancouncil.TB_ght_cc" in {
     val p = new GHT_CC_Params (40)
     test(new GHT_CC(p)).withAnnotations(Seq(WriteVcdAnnotation)) { dut =>
 
